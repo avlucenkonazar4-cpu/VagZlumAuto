@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Користувачі — VagZlumAuto{% endblock %}
+{% block content %}
+<section class="page-head"><div class="eyebrow">Адміністратор</div><h1>Користувачі та права</h1><p>Реєстрація добровільна, а права на додавання авто видає адміністратор.</p></section>
+<div class="user-list">
+{% for u in users %}
+<div class="user-row"><div><b>{{u.email}}</b><small>Зареєстрований: {{u.created_at}}</small></div>
+<form method="post" action="{{url_for('change_role', user_id=u.id)}}" class="role-form">
+<select name="role">{% for key,label in roles.items() %}<option value="{{key}}" {{'selected' if u.role==key}}>{{label}}</option>{% endfor %}</select><button class="btn small">Зберегти</button>
+</form></div>
+{% endfor %}
+</div>
+{% endblock %}

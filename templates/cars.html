@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ ui.pick_title }} — {{ site.name }}{% endblock %}
+{% block content %}
+<section class="page-head catalog-head"><div class="eyebrow">{{ ui.catalog }}</div><h1>{{ ui.pick_title }}</h1><p>{{ ui.pick_subtitle }}</p></section>
+<div class="model-picker cards">
+{% for item in quick_picker %}
+  <a class="car-card model-card {% if selected_brand == item.brand and ((item.type == 'model' and selected_model) or item.type == 'brand') %}active{% endif %}" href="{{ url_for('home', brand=item.brand, model=item.model) }}" aria-label="Показати {{ item.title }}"><div class="no-photo">🚗</div><div class="car-body"><h3>{{ item.title }}</h3><span class="model-link">{{ ui.show_cars }}</span></div></a>
+{% endfor %}
+</div>
+<div class="model-search-link"><a class="btn" href="{{ url_for('cars') }}">{{ ui.show_all }}</a></div>
+<div class="cards">{% for car in cars %}<article class="car-card">{% if car.photo %}<a href="{{ url_for('car_detail', car_id=car.id) }}"><img src="{{ url_for('static', filename='uploads/' + car.photo) }}" alt="{{ car.brand }} {{ car.model }}"></a>{% else %}<a href="{{ url_for('car_detail', car_id=car.id) }}"><div class="no-photo">🚘</div></a>{% endif %}<div class="car-body"><span class="tag">{{car.brand}}</span><h3>{{car.model}}</h3><div class="specs">{{car.year or '—'}} · {{car.mileage or '—'}} {{ ui.thousand_km }}</div><strong>{% if car.price %}{{ "{:,.0f}".format(car.price).replace(",", " ") }} {{ site.currency_name }}{% else %}{{ ui.price_request }}{% endif %}</strong><a class="btn detail-btn" href="{{ url_for('car_detail', car_id=car.id) }}">{{ ui.details }}</a></div></article>{% endfor %}</div>
+{% endblock %}

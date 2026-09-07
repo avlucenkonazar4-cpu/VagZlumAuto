@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ ui.edit_car if edit_mode else ui.add_car }} — {{ site.name }}{% endblock %}
+{% block content %}
+{% set detail_values = detail_values|default({}, true) %}
+<section class="page-head"><div class="eyebrow">{{ ui.form_panel }}</div><h1>{{ ui.edit_car if edit_mode else ui.add_car }}</h1><p>{{ ui.edit_hint if edit_mode else ui.add_hint }}</p></section>
+<form class="form-panel" method="post" enctype="multipart/form-data" action="{{ url_for('edit_car', car_id=edit_car_id) if edit_mode else url_for('add_car') }}">
+<h2>{{ ui.main_info }}</h2>
+{% set values = {"brand":brand,"model":model,"year":year,"price":price,"mileage":mileage,"fuel":fuel,"gearbox":gearbox,"body":body,"color":color,"engine":engine,"drive":drive,"phone":phone,"description":description,"vin":vin} %}
+<div class="form-grid three">
+{% for f in main_fields %}
+  <label{% if f.full %} class="full"{% endif %}>{{ f.name }}{% if f.required %} *{% endif %}
+  {% if f.type == 'select' %}
+    <select name="{{ f.key }}" id="form-{{ f.key }}"{% if f.required %} required{% endif %}>
+      <option value="">{{ ui.choose_brand if f.key == 'brand' else ui.choose_model if f.key == 'model' else ui.empty_option }}</option>
+      {% if f.key == 'brand' %}{% for x in brands %}<option value="{{x}}" {{'selected' if brand==x}}>{{x}}</option>{% endfor %}
+      {% elif f.key == 'fuel' %}{% for x in fuel_options %}<option value="{{x}}" {{'selected' if fuel==x}}>{{x}}</option>{% endfor %}
+      {% elif f.key == 'gearbox' %}{% for x in gearbox_options %}<option value="{{x}}" {{'selected' if gearbox==x}}>{{x}}</option>{% endfor %}
+      {% elif f.key == 'body' %}{% for x in body_options %}<option value="{{x}}" {{'selected' if body==x}}>{{x}}</option>{% endfor %}
+      {% elif f.key == 'drive' %}{% for x in drive_options %}<option value="{{x}}" {{'selected' if drive==x}}>{{x}}</option>{% endfor %}{% endif %}
+    </select>
+  {% elif f.type == 'textarea' %}<textarea name="{{ f.key }}" rows="5" placeholder="{{ f.placeholder or '' }}">{{ detail_values.get(f.key, '') or '' }}</textarea>
+  {% else %}<input type="{{ f.type }}" name="{{ f.key }}" value="{{ values.get(f.key, '') or '' }}" placeholder="{{ f.placeholder or '' }}"{% if f.required %} required{% endif %}>{% endif %}
+  </label>
+{% endfor %}
+</div>
+<h2>{{ ui.detail_info }}</h2>
+<div class="form-grid three">
+{% for f in detail_fields %}<label{% if f.full %} class="full"{% endif %}>{{ f.name }}<input name="{{ f.key }}" value="{{ detail_values.get(f.key, '') or '' }}" placeholder="{{ f.placeholder or '' }}"></label>{% endfor %}
+</div>
+{% if edit_mode and edit_photos %}<h2>{{ ui.added_photos }} <span class="photo-counter">({{ edit_photos|length }} / {{ max_photos }})</span></h2><div class="edit-photo-grid">{% for p in edit_photos %}<div class="edit-photo-item"><img src="{{ url_for('static', filename='uploads/' + p.filename) }}" alt="Фото {{loop.index}}"><form method="post" action="{{ url_for('delete_car_photo', car_id=edit_car_id, photo_id=p.id) }}" onsubmit="return confirm('{{ ui.confirm_delete_photo }}')"><button class="btn danger" type="submit">{{ ui.delete_photo }}</button></form></div>{% endfor %}</div>{% endif %}
+<h2>{{ ui.new_photos if edit_mode else ui.photos }} <span class="photo-counter" id="photo-count">({{ edit_photos|length if edit_mode and edit_photos else 0 }} / {{ max_photos }})</span></h2>
+<label class="upload">{{ ui.photo_choose }}<input type="file" id="photos-input" name="photos" accept="image/jpeg,image/png,image/webp" multiple></label>
+<p class="muted">{{ ui.photo_edit_hint if edit_mode else ui.photo_hint }}</p>
+<button class="btn red wide" type="submit">{{ ui.save_changes if edit_mode else ui.publish_car }}</button>
+{% if edit_mode %}<a class="btn wide" href="{{ url_for('add_car') }}">← {{ ui.add_car }}</a>{% endif %}
+</form>
+<section class="form-panel existing-cars"><h2>{{ ui.existing_cars }} <span class="muted">({{ existing_cars|length }})</span></h2>{% if existing_cars %}<div class="existing-list">{% for car in existing_cars %}<article class="existing-car"><div class="existing-thumb">{% if car.photo %}<img src="{{ url_for('static', filename='uploads/' + car.photo) }}" alt="{{car.brand}} {{car.model}}">{% else %}🚘{% endif %}</div><div class="existing-info"><strong>{{car.brand}} {{car.model}}</strong><span>{{car.year or '—'}} · {{car.photo_count}} фото · {{car.price or '—'}} $</span></div><div class="existing-actions"><a class="btn" href="{{url_for('edit_car', car_id=car.id)}}">{{ ui.edit }}</a><a class="btn" href="{{url_for('car_detail', car_id=car.id)}}">{{ ui.admin_details }}</a><form method="post" action="{{url_for('delete_car', car_id=car.id)}}" onsubmit="return confirm('{{ ui.confirm_delete_car }}')"><button class="btn danger" type="submit">{{ ui.delete }}</button></form></div></article>{% endfor %}</div>{% else %}<div class="empty">{{ ui.empty_cars }}</div>{% endif %}</section>
+<script>
+const formModels={{ models|tojson }};const formBrand=document.getElementById('form-brand');const formModel=document.getElementById('form-model');let currentModel={{ model|tojson }};
+function syncFormModels(){const brand=formBrand.value;const list=formModels[brand]||[];formModel.innerHTML='<option value="">{{ ui.choose_model }}</option>'+list.map(x=>`<option value="${x.replace(/"/g,'&quot;')}">${x}</option>`).join('');formModel.disabled=!brand;if(currentModel&&list.includes(currentModel))formModel.value=currentModel;}
+formBrand.addEventListener('change',()=>{currentModel='';syncFormModels()});syncFormModels();
+const photoInput=document.getElementById('photos-input'),count=document.getElementById('photo-count'),existingPhotoCount={{ edit_photos|length if edit_mode and edit_photos else 0 }};photoInput.addEventListener('change',()=>{if(existingPhotoCount+photoInput.files.length>{{ max_photos }}){alert('Максимум {{ max_photos }} фото до одного авто.');photoInput.value='';return}count.textContent=`(${existingPhotoCount+photoInput.files.length} / {{ max_photos }})`});
+</script>
+{% endblock %}

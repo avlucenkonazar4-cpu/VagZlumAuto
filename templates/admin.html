@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Адмінпанель — VagZlumAuto{% endblock %}
+{% block content %}
+<section class="page-head"><div class="eyebrow">Адміністратор</div><h1>Панель керування</h1></section>
+<div class="stats"><div><b>{{users_count}}</b><span>Користувачів</span></div><div><b>{{editors_count}}</b><span>Редакторів</span></div><div><b>{{cars_count}}</b><span>Автомобілів</span></div></div>
+<div class="admin-links"><a href="{{url_for('admin_users')}}">Користувачі та права →</a><a href="{{url_for('add_car')}}">Додати авто →</a><a href="{{url_for('cars')}}">Каталог авто →</a></div>
+{% endblock %}

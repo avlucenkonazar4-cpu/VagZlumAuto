@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ site.title }} — {{ site.name }}{% endblock %}
+{% block content %}
+<section class="hero home-hero">
+  <div class="badge">⌖ {{ site.hero_badge }}</div>
+  <h1>{{ site.name }}</h1>
+  <h2>{{ site.hero_title }}</h2>
+  <p>{{ site.hero_text }}<br>{{ site.hero_subtext }}</p>
+</section>
+<section class="quick-actions">
+  <a class="quick-btn red" href="{{ url_for('cars') }}">⌕ {{ ui.pick_title }}</a>
+  <a class="quick-btn orange" href="{{ url_for('parts') }}">🔧 Запчастини</a>
+  <a class="quick-btn green" href="{{ url_for('repair') }}">⚙ Ремонт</a>
+  <a class="quick-btn outline" href="{{ url_for('wheels') }}">◉ Колеса</a>
+</section>
+<section class="recommended section">
+{% if is_filtered %}
+  <div class="section-head"><div><h2>Автомобілі{% if selected_model %} {{ selected_model|upper }}{% elif selected_brand %} {{ selected_brand|upper }}{% endif %}</h2><p class="muted">{{ ui.filter_note }}</p></div><a href="{{ url_for('cars') }}">{{ ui.change_selection }}</a></div>
+  {% if cars %}<div class="recommended-grid">{% for car in cars %}
+    <article class="recommended-card"><a href="{{ url_for('car_detail', car_id=car.id) }}" class="recommended-photo">{% if car.photo %}<img src="{{ url_for('static', filename='uploads/' + car.photo) }}">{% else %}<div class="no-photo">🚘</div>{% endif %}</a><div class="recommended-body"><div class="recommended-meta"><span>{{ car.year or '—' }} {{ ui.year }}</span><strong>{% if car.price %}{{ "{:,.0f}".format(car.price).replace(",", " ") }} {{ site.currency_name }}{% else %}{{ ui.price_request }}{% endif %}</strong></div><h3>{{ car.brand }} {{ car.model }}</h3><a class="btn detail-btn" href="{{ url_for('car_detail', car_id=car.id) }}">{{ ui.details }}</a></div></article>
+  {% endfor %}</div>
+  {% else %}<div class="filter-empty"><h3>{{ ui.empty_filter_title }}</h3><p>{{ ui.empty_filter_text }}</p><a class="btn red js-call-modal" href="#">{{ ui.call_us }}</a></div>{% endif %}
+  <div class="recommended-action"><a class="btn" href="{{ url_for('cars') }}">{{ ui.back_to_picker }}</a></div>
+{% else %}
+  <div class="section-head"><div><h2>{{ ui.recommended }}</h2><p class="muted">{{ ui.recommended_subtitle }}</p></div><a href="{{ url_for('cars') }}">{{ ui.all_cars }}</a></div>
+  <div class="recommended-grid">{% for car in cars %}
+    <article class="recommended-card"><a href="{{ url_for('car_detail', car_id=car.id) }}" class="recommended-photo">{% if car.photo %}<img src="{{ url_for('static', filename='uploads/' + car.photo) }}">{% else %}<div class="no-photo">🚘</div>{% endif %}<span class="recommend-badge">{{ ui.recommended_badge }}</span></a><div class="recommended-body"><div class="recommended-meta"><span>{{ car.year or '—' }} {{ ui.year }}</span><strong>{% if car.price %}{{ "{:,.0f}".format(car.price).replace(",", " ") }} {{ site.currency_name }}{% else %}{{ ui.price_request }}{% endif %}</strong></div><h3>{{ car.brand }} {{ car.model }}</h3><a class="btn detail-btn" href="{{ url_for('car_detail', car_id=car.id) }}">{{ ui.details }}</a></div></article>
+  {% else %}<div class="empty">{{ ui.empty_cars }}</div>{% endfor %}</div>
+  <div class="recommended-action"><a class="btn red" href="{{ url_for('cars') }}">⌕ {{ ui.pick_title }}</a></div>
+{% endif %}
+</section>
+{% endblock %}

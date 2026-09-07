@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Реєстрація' if mode=='register' else 'Вхід' }} — VagZlumAuto{% endblock %}
+{% block content %}
+<section class="auth-card">
+  <div class="eyebrow">{{'Новий користувач' if mode=='register' else 'Особистий кабінет'}}</div>
+  <h1>{{'Реєстрація' if mode=='register' else 'Вхід'}}</h1>
+  <form method="post">
+    <label>Email<input type="email" name="email" required></label>
+    <label>Пароль<input type="password" name="password" minlength="6" required></label>
+    <button class="btn red wide">{{'Зареєструватися' if mode=='register' else 'Увійти'}}</button>
+  </form>
+  {% if mode=='register' %}<p>Після реєстрації ви можете переглядати сайт. Для додавання авто адміністратор має надати права редактора.</p>{% else %}<p>Ще немає акаунта? <a href="{{url_for('register')}}">Зареєструватися</a></p>{% endif %}
+</section>
+{% endblock %}

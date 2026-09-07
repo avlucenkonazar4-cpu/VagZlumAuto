@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ service.name }} — VagZlumAuto{% endblock %}
+{% block content %}
+<section class="service-detail-page">
+  <a class="back-link" href="{{ url_for('additional') }}">← Назад до додаткових послуг</a>
+  <div class="service-detail-card">
+    <div class="service-detail-icon">{{ service.icon }}</div>
+    <div class="eyebrow">Додаткові послуги</div>
+    <h1>{{ service.name }}</h1>
+    <p class="service-description">{{ service.description }}</p>
+    <div class="service-info-grid">
+      <div class="service-info-box"><span>Години роботи</span><b>{{ site.working_hours }}</b><small>{{ site.working_hours_note }}</small></div>
+      <div class="service-info-box"><span>Адреса</span><b>{{ site.address }}</b><small>{{ site.region }}</small></div>
+    </div>
+    <a class="btn red service-call js-call-modal" href="#">☎ Зателефонувати нам</a>
+    <div class="contact-bottom">📍 {{ site.address }}</div>
+  </div>
+</section>
+{% endblock %}

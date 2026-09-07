@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{page}} — VagZlumAuto{% endblock %}
+{% block content %}
+<section class="contact-page {{color}}">
+  <div class="big-icon">{{icon}}</div><div class="eyebrow">{{page}}</div><h1>{{page}}</h1>
+  <p>{{text}}</p>
+  <div class="contact-card"><div class="circle">☎</div><h2>Зателефонуйте нам — ми допоможемо вам підібрати {{'запчастини' if page=='Запчастини' else 'колеса та диски'}}</h2><p>Підкажемо наявність, сумісність та актуальну ціну.</p><a class="btn green js-call-modal" href="#">☎ Зателефонувати нам</a><div class="contact-bottom">📍 {{ site.city }}</div></div>
+</section>
+{% endblock %}

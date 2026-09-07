@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Додатково — VagZlumAuto{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div class="eyebrow">Послуги</div>
+  <h1>Додатково</h1>
+  <p>Додаткові послуги для вашого автомобіля у Сокалі.</p>
+</section>
+<div class="service-grid additional-grid">
+  {% for service in services %}
+  <a class="service service-link" href="{{ url_for('additional_detail', slug=service.slug) }}">
+    <div class="service-icon">{{ service.icon }}</div>
+    <h3>{{ service.name }}</h3>
+    <p>{{ service.description }}</p>
+    <span class="service-more">Детальніше →</span>
+  </a>
+  {% endfor %}
+</div>
+<div class="contact-strip">
+  <div><b>Усі послуги — у Сокалі</b><div class="muted">м. Сокаль, вул. Татаркавська</div></div>
+  <a class="btn red js-call-modal" href="#">☎ Зателефонувати</a>
+</div>
+{% endblock %}
